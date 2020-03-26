@@ -8,7 +8,7 @@ public class ScorePage extends JFrame implements ActionListener {
     private static JButton backBtn = new JButton("Back");
     private static WorkWithFile workWithFile = new WorkWithFile();
     private static JLabel scoreTittleLbl = new JLabel("Score");
-    private static JLabel maxScoreLbl = new JLabel("Champion score is " + workWithFile.getMaxScore());
+    private static JLabel maxScoreLbl = new JLabel("Champion score is " + workWithFile.getData("src/main/resources/data/score.txt"));
     private static Music music = new Music();
 
     public ScorePage() {
@@ -16,7 +16,7 @@ public class ScorePage extends JFrame implements ActionListener {
         scoreFrame.setTitle("Snake");
         scoreFrame.setBounds(0, 0, 480, 480);
         scoreFrame.setBackground(Color.darkGray);
-        scoreFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        scoreFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         scoreTittleLbl.setLocation(scoreFrame.getSize().width / 2 - 50, 0);
         scoreTittleLbl.setSize(400, 100);

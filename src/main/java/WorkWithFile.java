@@ -4,22 +4,22 @@ public class WorkWithFile {
 
     public WorkWithFile() {}
 
-    public String getMaxScore () {
-        String score = null;
+    public String getData (String pathName) {
+        String data = null;
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/data/score.txt"));
-            score = reader.readLine();
+            BufferedReader reader = new BufferedReader(new FileReader(pathName));
+            data = reader.readLine();
             reader.close();
         } catch (IOException e) {
 
         }
-        return score;
+        return data;
     }
 
-    public void writeMaxScore (String score) {
+    public void writeData (String data, String pathName) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/data/score.txt"));
-            writer.write(score);
+            BufferedWriter writer = new BufferedWriter(new FileWriter(pathName));
+            writer.write(data);
             writer.close();
         } catch (IOException e) {
 

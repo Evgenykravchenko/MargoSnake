@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Random;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,11 +30,17 @@ public class GameField extends JPanel implements ActionListener {
     JFrame gameFrame;
     Music music = new Music();
 
-    GameField(JFrame jFrame) {
+    private static int i_anim;
+    private static ArrayList<Image> bubbles = new ArrayList<>();
+    private static String currentAnimation;
+    private Audio audio;
+
+    GameField(JFrame jFrame, Audio audio) {
         this.ALL_SEGMENTS = jFrame.getSize().width;
         this.x = new int[this.ALL_SEGMENTS];
         this.y = new int[this.ALL_SEGMENTS];
         this.gameFrame = jFrame;
+        this.audio = audio;
         setBackground(Color.pink);
         downloadImage();
         Game();
@@ -46,6 +53,11 @@ public class GameField extends JPanel implements ActionListener {
         snake = snakeIcon.getImage();
         ImageIcon foodIcon = new ImageIcon("src/main/resources/picture/bee.png");
         food = foodIcon.getImage();
+
+        for (int i = 0; i < 9; i++) {
+            ImageIcon bubbleIcon = new ImageIcon("src/main/resources/picture/bubble" + (i + 1) + ".png");
+            bubbles.add(bubbleIcon.getImage());
+        }
     }
 
     private void createFood() {
@@ -93,10 +105,10 @@ public class GameField extends JPanel implements ActionListener {
     }
 
     private void checkField() {
-        if (x[0] <= 0) inGame = false;
-        if (x[0] >= ALL_SEGMENTS - 16) inGame = false;
-        if (y[0] <= 0) inGame = false;
-        if (y[0] >= ALL_SEGMENTS - 32) inGame = false;
+        if (x[0] <= 0 && left) inGame = false;
+        if (x[0] >= ALL_SEGMENTS - 16 && right) inGame = false;
+        if (y[0] <= 0 && up) inGame = false;
+        if (y[0] >= ALL_SEGMENTS - 32 && down) inGame = false;
     }
 
     @Override
@@ -115,12 +127,12 @@ public class GameField extends JPanel implements ActionListener {
         } else {
             music.gameOver();
             WorkWithFile workWithFile = new WorkWithFile();
-            int maxScore = Integer.parseInt(workWithFile.getMaxScore());
+            int maxScore = Integer.parseInt(workWithFile.getData("src/main/resources/data/score.txt"));
             if (maxScore < score) {
-                workWithFile.writeMaxScore(String.valueOf(score));
+                workWithFile.writeData(String.valueOf(score), "src/main/resources/data/score.txt");
             }
             gameFrame.setVisible(false);
-            new GameOverScreen(score);
+            new GameOverScreen(score, audio);
             score = 0;
         }
     }

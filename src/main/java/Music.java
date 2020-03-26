@@ -1,8 +1,11 @@
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
+import javax.sound.sampled.*;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class Music {
     private static FileInputStream stream;
@@ -38,6 +41,13 @@ public class Music {
         } catch (FileNotFoundException | JavaLayerException e) {
             System.out.println("Can't find sound file!");
         }
+    }
+
+    public void mainMenu() {
+        Audio audio = new Audio(0.8);
+        audio.play();
+        audio.setVolume();
+        audio.repeat();
     }
 
 }

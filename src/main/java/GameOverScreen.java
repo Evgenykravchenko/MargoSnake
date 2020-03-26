@@ -7,20 +7,23 @@ public class GameOverScreen extends JFrame implements ActionListener {
 
     Music music = new Music();
     JFrame gameFrame = new JFrame();
-    public GameOverScreen(int score) {
+    Audio audio;
+    WorkWithFile workWithFile = new WorkWithFile();
+    public GameOverScreen(int score, Audio audio) {
+        this.audio = audio;
         JButton restartBtn;
         JButton mainMenuBtn;
         JButton exitBtn;
         WorkWithFile workWithFile = new WorkWithFile();
         JLabel gameOverLbl = new JLabel("GAME OVER");
         JLabel yourScoreLbl = new JLabel("You're score is " + score);
-        JLabel maxScoreLbl = new JLabel("Champion score is " + workWithFile.getMaxScore());
+        JLabel maxScoreLbl = new JLabel("Champion score is " + workWithFile.getData("src/main/resources/data/score.txt"));
 
         gameFrame.setLayout(null);
         gameFrame.setTitle("Snake");
         gameFrame.setBounds(0, 0, 480, 480);
         gameFrame.setBackground(Color.darkGray);
-        gameFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        gameFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         restartBtn = new JButton("Restart");
         restartBtn.setLocation(40, 90);
@@ -66,7 +69,7 @@ public class GameOverScreen extends JFrame implements ActionListener {
     public void actionRestart(ActionEvent e) {
         music.click();
         gameFrame.dispose();
-        new GameWindow();
+        new GameWindow(audio);
     }
 
     public void actionMainMenu(ActionEvent e) {
@@ -77,6 +80,7 @@ public class GameOverScreen extends JFrame implements ActionListener {
 
     public void actionExit(ActionEvent e) {
         music.click();
+        workWithFile.writeData("false", "src/main/resources/data/isSoundPlay.txt");
         System.exit(0);
     }
 

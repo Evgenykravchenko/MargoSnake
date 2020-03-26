@@ -2,10 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 public class MyFrame extends JFrame implements ActionListener {
     JFrame gameFrame = new JFrame();
     private Music music = new Music();
+    private Audio audio = new Audio(0.8);
+    private WorkWithFile workWithFile = new WorkWithFile();
 
     public MyFrame() {
         JButton playBtn;
@@ -17,7 +21,7 @@ public class MyFrame extends JFrame implements ActionListener {
         gameFrame.setLayout(null);
         gameFrame.setTitle("Snake");
         gameFrame.setBounds(0, 0, 480, 480);
-        gameFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        gameFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         playBtn = new JButton("Play");
         playBtn.setLocation(40, 90);
@@ -48,6 +52,59 @@ public class MyFrame extends JFrame implements ActionListener {
         label.setSize(300, 70);
         label.setForeground(Color.GREEN);
 
+        if (workWithFile.getData("src/main/resources/data/isSoundPlay.txt").equals("false")) {
+            audio.play();
+            audio.setVolume();
+            audio.repeat();
+            workWithFile.writeData("true", "src/main/resources/data/isSoundPlay.txt");
+        }
+
+        gameFrame.addWindowListener(new WindowListener() {
+
+            public void windowActivated(WindowEvent event) {
+
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+
+            }
+
+            public void windowClosed(WindowEvent event) {
+
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowOpened(WindowEvent e) {
+
+            }
+
+            public void windowClosing(WindowEvent event) {
+                Object[] options = { "Да", "Нет!" };
+                int n = JOptionPane
+                        .showOptionDialog(event.getWindow(), "Закрыть окно?",
+                                "Подтверждение", JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE, null, options,
+                                options[0]);
+                if (n == 0) {
+                    event.getWindow().setVisible(false);
+                    workWithFile.writeData("false", "src/main/resources/data/isSoundPlay.txt");
+                    System.exit(0);
+                }
+            }
+        });
+
+        gameFrame.setLocationRelativeTo(null);
 
         gameFrame.getContentPane().add(playBtn);
         gameFrame.getContentPane().add(scoreBtn);
@@ -56,13 +113,12 @@ public class MyFrame extends JFrame implements ActionListener {
         gameFrame.getContentPane().add(label);
         gameFrame.getContentPane().setBackground(Color.orange);
         gameFrame.setVisible(true);
-
     }
 
     public void actionPlay(ActionEvent e) {
         music.click();
         gameFrame.dispose();
-        new GameWindow();
+        new GameWindow(audio);
     }
 
     public void actionShowScore(ActionEvent e) {
@@ -73,10 +129,13 @@ public class MyFrame extends JFrame implements ActionListener {
 
     public void actionSettings(ActionEvent e) {
         music.click();
+        gameFrame.dispose();
+        new SettingsPage(audio);
     }
 
     public void actionExit(ActionEvent e) {
         music.click();
+        workWithFile.writeData("false", "src/main/resources/data/isSoundPlay.txt");
         System.exit(0);
     }
 
