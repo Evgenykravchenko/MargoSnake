@@ -16,8 +16,9 @@ public class SettingsPage extends JFrame implements ActionListener {
     private static JButton musicOnOffBtn = new JButton("V");
     private static Music music = new Music();
     Audio audio;
-
-    public SettingsPage(Audio audio) {
+    private JFrame gameFrame;
+    public SettingsPage(Audio audio, JFrame gameFrame) {
+        this.gameFrame = gameFrame;
         this.audio = audio;
         settingsFrame.setLayout(null);
         settingsFrame.setTitle("Snake");
@@ -110,7 +111,7 @@ public class SettingsPage extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         music.click();
         settingsFrame.dispose();
-        new MyFrame();
+        gameFrame.setVisible(true);
     }
 
     public void actionMusicOnOff (ActionEvent e) {

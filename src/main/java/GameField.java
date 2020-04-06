@@ -29,13 +29,16 @@ public class GameField extends JPanel implements ActionListener {
     private JTextField textField;
     JFrame gameFrame;
     Music music = new Music();
-
+    WorkWithFile workWithFile = new WorkWithFile();
     private static int i_anim;
     private static ArrayList<Image> bubbles = new ArrayList<>();
     private static String currentAnimation;
     private Audio audio;
+    private JFrame mainMenu;
 
-    GameField(JFrame jFrame, Audio audio) {
+    GameField(JFrame jFrame, Audio audio, JFrame mainMenu) {
+        this.mainMenu = mainMenu;
+        workWithFile.writeData("false", "src/main/resources/data/isPause.txt");
         this.ALL_SEGMENTS = jFrame.getSize().width;
         this.x = new int[this.ALL_SEGMENTS];
         this.y = new int[this.ALL_SEGMENTS];
@@ -81,6 +84,7 @@ public class GameField extends JPanel implements ActionListener {
             music.pickUpSmth();
             snakeSize++;
             score++;
+
             createFood();
         }
     }
@@ -119,20 +123,20 @@ public class GameField extends JPanel implements ActionListener {
             for (int i = 0; i < snakeSize; i++) {
                 g.drawImage(snake, x[i], y[i], this);
             }
-
             Font font = new Font("Mongolian Baiti", Font.BOLD, 10);
             g.setColor(Color.BLACK);
             g.setFont(font);
             g.drawString("SCORE: " + score, ALL_SEGMENTS - 70, 20);
+
+
         } else {
             music.gameOver();
-            WorkWithFile workWithFile = new WorkWithFile();
             int maxScore = Integer.parseInt(workWithFile.getData("src/main/resources/data/score.txt"));
             if (maxScore < score) {
                 workWithFile.writeData(String.valueOf(score), "src/main/resources/data/score.txt");
             }
             gameFrame.setVisible(false);
-            new GameOverScreen(score, audio);
+            new GameOverScreen(score, audio, mainMenu);
             score = 0;
         }
     }
@@ -150,7 +154,7 @@ public class GameField extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (inGame) {
+        if (inGame && (workWithFile.getData("src/main/resources/data/isPause.txt").equals("false"))) {
             checkFood();
             checkSnakeSize();
             checkField();
@@ -172,7 +176,6 @@ public class GameField extends JPanel implements ActionListener {
                 right = false;
                 left = false;
             }
-
             if (key == KeyEvent.VK_DOWN && !up) {
                 down = true;
                 right = false;
@@ -190,6 +193,19 @@ public class GameField extends JPanel implements ActionListener {
                 up = false;
                 down = false;
             }
+            /*if (key == KeyEvent.VK_Y) {
+                if (workWithFile.getData("src/main/resources/data/isPause.txt").equals("true")) {
+                    workWithFile.writeData("false", "src/main/resources/data/isPause.txt");
+                }
+            }
+            */
+            if (key == KeyEvent.VK_R) {
+                if (workWithFile.getData("src/main/resources/data/isPause.txt").equals("false")) {
+                    workWithFile.writeData("true1", "src/main/resources/data/isPause.txt");
+                    new Pause(gameFrame);
+                }
+            }
+
         }
     }
 }

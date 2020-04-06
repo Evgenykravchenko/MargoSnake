@@ -7,9 +7,11 @@ public class GameOverScreen extends JFrame implements ActionListener {
 
     Music music = new Music();
     JFrame gameFrame = new JFrame();
+    JFrame mainMenu;
     Audio audio;
     WorkWithFile workWithFile = new WorkWithFile();
-    public GameOverScreen(int score, Audio audio) {
+    public GameOverScreen(int score, Audio audio, JFrame mainMenu) {
+        this.mainMenu = mainMenu;
         this.audio = audio;
         JButton restartBtn;
         JButton mainMenuBtn;
@@ -69,13 +71,13 @@ public class GameOverScreen extends JFrame implements ActionListener {
     public void actionRestart(ActionEvent e) {
         music.click();
         gameFrame.dispose();
-        new GameWindow(audio);
+        new GameWindow(audio, mainMenu);
     }
 
     public void actionMainMenu(ActionEvent e) {
         music.click();
         gameFrame.dispose();
-        new MyFrame();
+        mainMenu.setVisible(true);
     }
 
     public void actionExit(ActionEvent e) {

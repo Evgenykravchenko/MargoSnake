@@ -52,13 +52,17 @@ public class MyFrame extends JFrame implements ActionListener {
         label.setSize(300, 70);
         label.setForeground(Color.GREEN);
 
-        if (workWithFile.getData("src/main/resources/data/isSoundPlay.txt").equals("false")) {
+        /*if (workWithFile.getData("src/main/resources/data/isSoundPlay.txt").equals("false")) {
             audio.play();
             audio.setVolume();
             audio.repeat();
             workWithFile.writeData("true", "src/main/resources/data/isSoundPlay.txt");
         }
-
+        */
+        workWithFile.writeData("true", "src/main/resources/data/isSoundPlay.txt");
+        audio.play();
+        audio.setVolume();
+        audio.repeat();
         gameFrame.addWindowListener(new WindowListener() {
 
             public void windowActivated(WindowEvent event) {
@@ -118,19 +122,19 @@ public class MyFrame extends JFrame implements ActionListener {
     public void actionPlay(ActionEvent e) {
         music.click();
         gameFrame.dispose();
-        new GameWindow(audio);
+        new GameWindow(audio, gameFrame);
     }
 
     public void actionShowScore(ActionEvent e) {
         music.click();
         gameFrame.dispose();
-        new ScorePage();
+        new ScorePage(gameFrame);
     }
 
     public void actionSettings(ActionEvent e) {
         music.click();
         gameFrame.dispose();
-        new SettingsPage(audio);
+        new SettingsPage(audio, gameFrame);
     }
 
     public void actionExit(ActionEvent e) {

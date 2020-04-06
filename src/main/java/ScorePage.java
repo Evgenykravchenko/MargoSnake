@@ -10,8 +10,10 @@ public class ScorePage extends JFrame implements ActionListener {
     private static JLabel scoreTittleLbl = new JLabel("Score");
     private static JLabel maxScoreLbl = new JLabel("Champion score is " + workWithFile.getData("src/main/resources/data/score.txt"));
     private static Music music = new Music();
+    private JFrame gameFrame;
 
-    public ScorePage() {
+    public ScorePage(JFrame gameFrame) {
+        this.gameFrame = gameFrame;
         scoreFrame.setLayout(null);
         scoreFrame.setTitle("Snake");
         scoreFrame.setBounds(0, 0, 480, 480);
@@ -43,6 +45,6 @@ public class ScorePage extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         music.click();
         scoreFrame.dispose();
-        new MyFrame();
+        gameFrame.setVisible(true);
     }
 }
