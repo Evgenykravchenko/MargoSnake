@@ -3,8 +3,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class Audio {
-    private String track = "src/main/resources/music/mainMenuSound.wav";
-    private File file = new File(track);
+    private String track;
+    private File file;
     private AudioInputStream audioInputStream = null;
     private Clip clip = null;
     private FloatControl volumeC = null;
@@ -15,6 +15,14 @@ public class Audio {
 
     public double wt;
     private boolean pl_audio;
+
+    public Audio(double wt, String track) {
+        this.wt = wt;
+        this.track = track;
+        this.pl_audio = false;
+        this.file = new File(track);
+
+    }
 
     public Audio(double wt) {
         this.wt = wt;

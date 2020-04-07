@@ -19,7 +19,7 @@ public class Pause  implements ActionListener {
         pauseFrame = new JFrame();
         pauseFrame.setLayout(null);
         pauseFrame.setTitle("Snake");
-        pauseFrame.setBounds(0, 0, 480, 480);
+        pauseFrame.setBounds(gameFrame.getX(), gameFrame.getY(), 480, 480);
         pauseFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         pauseTittleLbl.setLocation(pauseFrame.getSize().width / 2 - 50, 0);
@@ -40,6 +40,7 @@ public class Pause  implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        gameFrame.setLocation(pauseFrame.getX(), pauseFrame.getY());
         gameFrame.setVisible(true);
         pauseFrame.dispose();
         workWithFile.writeData("false", "src/main/resources/data/isPause.txt");

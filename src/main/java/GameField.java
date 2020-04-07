@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class GameField extends JPanel implements ActionListener {
-    private static int score = 0;
+    public static int score = 0;
     public boolean inGame = true;      //нахождение в игре
     private final int SIZE = 320;       //размер поля
     private final int SNAKE_SIZE = 16;    //размер пикселя
@@ -30,20 +30,17 @@ public class GameField extends JPanel implements ActionListener {
     JFrame gameFrame;
     Music music = new Music();
     WorkWithFile workWithFile = new WorkWithFile();
-    private static int i_anim;
-    private static ArrayList<Image> bubbles = new ArrayList<>();
-    private static String currentAnimation;
-    private Audio audio;
-    private JFrame mainMenu;
+    public JFrame mainMenu;
+    private Audio audioBtnClick = new Audio(0.8, "src/main/resources/music/btnClickSound.wav");
+    private Audio audioPickUpSmth = new Audio(0.8, "src/main/resources/music/pickUpSmthSound.wav");
 
-    GameField(JFrame jFrame, Audio audio, JFrame mainMenu) {
+    GameField(JFrame jFrame, JFrame mainMenu) {
         this.mainMenu = mainMenu;
         workWithFile.writeData("false", "src/main/resources/data/isPause.txt");
         this.ALL_SEGMENTS = jFrame.getSize().width;
         this.x = new int[this.ALL_SEGMENTS];
         this.y = new int[this.ALL_SEGMENTS];
         this.gameFrame = jFrame;
-        this.audio = audio;
         setBackground(Color.pink);
         downloadImage();
         Game();
@@ -57,10 +54,6 @@ public class GameField extends JPanel implements ActionListener {
         ImageIcon foodIcon = new ImageIcon("src/main/resources/picture/bee.png");
         food = foodIcon.getImage();
 
-        for (int i = 0; i < 9; i++) {
-            ImageIcon bubbleIcon = new ImageIcon("src/main/resources/picture/bubble" + (i + 1) + ".png");
-            bubbles.add(bubbleIcon.getImage());
-        }
     }
 
     private void createFood() {
@@ -81,7 +74,8 @@ public class GameField extends JPanel implements ActionListener {
 
     private void checkFood() {
         if (x[0] == foodX && y[0] == foodY) {
-            music.pickUpSmth();
+            audioPickUpSmth.sound();
+            audioPickUpSmth.setVolume();
             snakeSize++;
             score++;
 
@@ -121,22 +115,43 @@ public class GameField extends JPanel implements ActionListener {
         if (inGame) {
             g.drawImage(food, foodX, foodY, this);
             for (int i = 0; i < snakeSize; i++) {
-                g.drawImage(snake, x[i], y[i], this);
+                //g.drawImage(snake, x[i], y[i], this);
+                g.drawRect(x[i], y[i], 16, 16);
             }
+            for (int i = 0; i < snakeSize; i++) {
+                //g.drawImage(food, x[i], y[i], this);
+                //g.drawRect();
+                g.drawRect(x[i], y[i], 16, 16);
+
+            }
+
             Font font = new Font("Mongolian Baiti", Font.BOLD, 10);
             g.setColor(Color.BLACK);
             g.setFont(font);
             g.drawString("SCORE: " + score, ALL_SEGMENTS - 70, 20);
 
-
         } else {
             music.gameOver();
+            //for (int j = 1; j < 10; j++) {
+               // ImageIcon bubbles = new ImageIcon("src/main/resources/picture/bubble" + j + ".png");
+                for (int i = 0; i < snakeSize; i++) {
+                    //g.drawImage(food, x[i], y[i], this);
+                    //g.drawRect();
+                    g.clearRect(x[i], y[i], 16, 16);
+                    repaint(1, x[i], y[i], 16, 16);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             int maxScore = Integer.parseInt(workWithFile.getData("src/main/resources/data/score.txt"));
             if (maxScore < score) {
                 workWithFile.writeData(String.valueOf(score), "src/main/resources/data/score.txt");
             }
-            gameFrame.setVisible(false);
-            new GameOverScreen(score, audio, mainMenu);
+            //gameFrame.setVisible(false);
+            createGameOverPage(gameFrame);
+            //new GameOverScreen(score, mainMenu, gameFrame.getX(), gameFrame.getY());
             score = 0;
         }
     }
@@ -207,5 +222,88 @@ public class GameField extends JPanel implements ActionListener {
             }
 
         }
+    }
+
+    public void createGameOverPage(JFrame gameFrame) {
+        gameFrame.getContentPane().removeAll();
+
+        JButton restartBtn;
+        JButton mainMenuBtn;
+        JButton exitBtn;
+        WorkWithFile workWithFile = new WorkWithFile();
+        JLabel gameOverLbl = new JLabel("GAME OVER");
+        JLabel yourScoreLbl = new JLabel("You're score is " + score);
+        JLabel maxScoreLbl = new JLabel("Champion score is " + workWithFile.getData("src/main/resources/data/score.txt"));
+
+        gameFrame.setLayout(null);
+        gameFrame.setTitle("Snake");
+        gameFrame.setBounds(gameFrame.getX(), gameFrame.getY(), 480, 480);
+        gameFrame.setBackground(Color.darkGray);
+        gameFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+
+        restartBtn = new JButton("Restart");
+        restartBtn.setLocation(40, 90);
+        restartBtn.setSize(400, 50);
+        restartBtn.setForeground(Color.pink);
+        restartBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                audioBtnClick.sound();
+                audioBtnClick.setVolume();
+                gameFrame.dispose();
+                new GameWindow(gameFrame, gameFrame.getX(), gameFrame.getY());
+            }
+        });
+
+        mainMenuBtn = new JButton("Menu");
+        mainMenuBtn.setLocation(40, 150);
+        mainMenuBtn.setSize(400, 50);
+        mainMenuBtn.setForeground(Color.pink);
+        mainMenuBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                audioBtnClick.sound();
+                audioBtnClick.setVolume();
+                gameFrame.dispose();
+                //mainMenu.setLocation(gameFrame.getX(), gameFrame.getY());
+                mainMenu.setVisible(true);
+            }
+        });
+
+        exitBtn = new JButton("Exit");
+        exitBtn.setLocation(40, 210);
+        exitBtn.setSize(400, 50);
+        exitBtn.setForeground(Color.pink);
+        exitBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                audioBtnClick.sound();
+                audioBtnClick.setVolume();
+                workWithFile.writeData("false", "src/main/resources/data/isSoundPlay.txt");
+                System.exit(0);
+            }
+        });
+
+        gameOverLbl.setLocation(gameFrame.getSize().width / 2 - 30, 0);
+        gameOverLbl.setSize(300, 70);
+        gameOverLbl.setForeground(Color.RED);
+
+        yourScoreLbl.setLocation(gameFrame.getSize().width / 2 - 45, 20);
+        yourScoreLbl.setSize(300, 70);
+        yourScoreLbl.setForeground(Color.ORANGE);
+
+        maxScoreLbl.setLocation(gameFrame.getSize().width / 2 - 55, 40);
+        maxScoreLbl.setSize(300, 70);
+        maxScoreLbl.setForeground(Color.ORANGE);
+
+        gameFrame.getContentPane().add(restartBtn);
+        gameFrame.getContentPane().add(mainMenuBtn);
+        gameFrame.getContentPane().add(exitBtn);
+
+        gameFrame.getContentPane().add(gameOverLbl);
+        gameFrame.getContentPane().add(yourScoreLbl);
+        gameFrame.getContentPane().add(maxScoreLbl);
+
+        gameFrame.getContentPane().repaint();
     }
 }

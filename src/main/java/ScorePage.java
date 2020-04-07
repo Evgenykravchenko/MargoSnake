@@ -10,13 +10,14 @@ public class ScorePage extends JFrame implements ActionListener {
     private static JLabel scoreTittleLbl = new JLabel("Score");
     private static JLabel maxScoreLbl = new JLabel("Champion score is " + workWithFile.getData("src/main/resources/data/score.txt"));
     private static Music music = new Music();
+    private Audio audioBtn = new Audio(0.8, "src/main/resources/music/btnClickSound.wav");
     private JFrame gameFrame;
 
     public ScorePage(JFrame gameFrame) {
         this.gameFrame = gameFrame;
         scoreFrame.setLayout(null);
         scoreFrame.setTitle("Snake");
-        scoreFrame.setBounds(0, 0, 480, 480);
+        scoreFrame.setBounds(gameFrame.getX(), gameFrame.getY(), 480, 480);
         scoreFrame.setBackground(Color.darkGray);
         scoreFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
@@ -38,13 +39,14 @@ public class ScorePage extends JFrame implements ActionListener {
         scoreFrame.getContentPane().add(backBtn);
         scoreFrame.getContentPane().add(scoreTittleLbl);
         scoreFrame.getContentPane().add(maxScoreLbl);
-        scoreFrame.setVisible(true);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        music.click();
+        audioBtn.sound();
+        audioBtn.setVolume();
         scoreFrame.dispose();
+        gameFrame.setLocation(scoreFrame.getX() , scoreFrame.getY());
         gameFrame.setVisible(true);
     }
 }

@@ -13,13 +13,13 @@ public class GameWindow extends JFrame {
         new MyFrame();
     }
 
-    public GameWindow(Audio audio, JFrame mainMenu) {//Передаем аудио, если решим как добавить паузу, где будет настройка, чтобы менять громкость или выключать
+    public GameWindow(JFrame mainMenu, int x, int y) {
         JFrame frame = new JFrame();
         this.mainMenu = mainMenu;
         frame.setTitle("Snake");
-        frame.setBounds(0, 0, 480, 480);
+        frame.setBounds(x, y, 480, 480);
         frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        frame.add(new GameField(frame, audio, mainMenu));
+        frame.getContentPane().add(new GameField(frame, mainMenu));
         frame.setVisible(true);
     }
 }

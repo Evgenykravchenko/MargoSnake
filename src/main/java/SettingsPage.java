@@ -15,6 +15,7 @@ public class SettingsPage extends JFrame implements ActionListener {
     private static JLabel musicONOFF = new JLabel("Music ON/OFF");
     private static JButton musicOnOffBtn = new JButton("V");
     private static Music music = new Music();
+    private Audio audioBtn = new Audio(0.8, "src/main/resources/music/btnClickSound.wav");
     Audio audio;
     private JFrame gameFrame;
     public SettingsPage(Audio audio, JFrame gameFrame) {
@@ -22,7 +23,7 @@ public class SettingsPage extends JFrame implements ActionListener {
         this.audio = audio;
         settingsFrame.setLayout(null);
         settingsFrame.setTitle("Snake");
-        settingsFrame.setBounds(0, 0, 480, 480);
+        settingsFrame.setBounds(gameFrame.getX(), gameFrame.getY(), 480, 480);
         settingsFrame.setBackground(Color.darkGray);
         settingsFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
@@ -109,8 +110,10 @@ public class SettingsPage extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        music.click();
+        audioBtn.sound();
+        audioBtn.setVolume();
         settingsFrame.dispose();
+        gameFrame.setLocation(settingsFrame.getX(), settingsFrame.getY());
         gameFrame.setVisible(true);
     }
 
