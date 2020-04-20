@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.security.Key;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,13 +15,29 @@ public class GameField extends JPanel implements ActionListener {
     private final int SNAKE_SIZE = 16;    //размер пикселя
     private int ALL_SEGMENTS = 0;   //всего единиц на поле
     private Image snake;
+    private Image headLeft;
+    private Image headUp;
+    private Image headRight;
+    private Image headDown;
+    private Image body;
     private Image food;
+    private Image grass;
+    private Image wall;
+    private ArrayList<Integer> wallX;
+    private ArrayList<Integer> wallY;
     private int foodX;  //позиции еды по оси Ох
     private int foodY;  //позиции еды по оси Оу
+    private int bonusX;
+    private int bonusY;
+    private Image portalIn;
+    private Image portalOut;
     private int snakeSize;
     private int[] x;    //позиции для змейки по оси Ох
     private int[] y;    //позиции для змейки по оси Оу
     private Timer timer;
+    private Date date1;
+    private Date date2;
+    private boolean isDateSet = true;
     private boolean left = false;
     private boolean right = false;   //первоначальная позиция змейки
     private boolean down = true;
@@ -33,15 +50,29 @@ public class GameField extends JPanel implements ActionListener {
     public JFrame mainMenu;
     private Audio audioBtnClick = new Audio(0.8, "src/main/resources/music/btnClickSound.wav");
     private Audio audioPickUpSmth = new Audio(0.8, "src/main/resources/music/pickUpSmthSound.wav");
+    private static int delay;
 
     GameField(JFrame jFrame, JFrame mainMenu) {
+        wallX = new ArrayList<>();
+        wallY = new ArrayList<>();
+
+        delay = 250;
         this.mainMenu = mainMenu;
         workWithFile.writeData("false", "src/main/resources/data/isPause.txt");
         this.ALL_SEGMENTS = jFrame.getSize().width;
         this.x = new int[this.ALL_SEGMENTS];
         this.y = new int[this.ALL_SEGMENTS];
         this.gameFrame = jFrame;
-        setBackground(Color.pink);
+
+        if (workWithFile.getData("src/main/resources/data/TypeOfDifficult.txt").equals("Hard")) {
+            for (int i = 16; i < gameFrame.getHeight(); i = i + 32) {
+                for (int j = 16; j < gameFrame.getWidth(); j = j + 32) {
+                    wallX.add(j);
+                    wallY.add(i);
+                }
+            }
+        }
+        setBackground(Color.red);
         downloadImage();
         Game();
         addKeyListener(new SnakeKeyListener());
@@ -50,35 +81,72 @@ public class GameField extends JPanel implements ActionListener {
 
     private void downloadImage() {
         ImageIcon snakeIcon = new ImageIcon("src/main/resources/picture/snake.png");
-        snake = snakeIcon.getImage();
+        portalIn = snakeIcon.getImage();
+        portalOut = snakeIcon.getImage();
+
+        ImageIcon headIcon = new ImageIcon("src/main/resources/picture/headLeft.png");
+        headLeft = headIcon.getImage();
+        headIcon = new ImageIcon("src/main/resources/picture/headUp.png");
+        headUp = headIcon.getImage();
+        headIcon = new ImageIcon("src/main/resources/picture/headRight.png");
+        headRight = headIcon.getImage();
+        headIcon = new ImageIcon("src/main/resources/picture/headDown.png");
+        headDown = headIcon.getImage();
+        ImageIcon bodyIcon = new ImageIcon("src/main/resources/picture/body.png");
+        body = bodyIcon.getImage();
+
         ImageIcon foodIcon = new ImageIcon("src/main/resources/picture/bee.png");
         food = foodIcon.getImage();
+        ImageIcon grassIcon = new ImageIcon("src/main/resources/picture/grass.png");
+        grass = grassIcon.getImage();
+
+        ImageIcon wallImg = new ImageIcon("src/main/resources/picture/wall/wall.png");
+        wall = wallImg.getImage();
+
 
     }
 
     private void createFood() {
-        foodX = random.nextInt(20) * SNAKE_SIZE;
-        foodY = random.nextInt(20) * SNAKE_SIZE;
+        foodX = random.nextInt(gameFrame.getWidth() / SNAKE_SIZE - 16) * SNAKE_SIZE;
+        foodY = random.nextInt(gameFrame.getHeight() / SNAKE_SIZE - 16) * SNAKE_SIZE;
+        for (int i = 0; i < wallX.size(); i++) {
+            while (foodX == wallX.get(i) && foodY == wallY.get(i)) {
+                foodX = random.nextInt(gameFrame.getWidth() / SNAKE_SIZE) * SNAKE_SIZE;
+                foodY = random.nextInt(gameFrame.getHeight() / SNAKE_SIZE) * SNAKE_SIZE;
+            }
+        }
+
     }
 
     private void Game() {
-        timer = new Timer(250, this);
+        timer = new Timer(delay, this);
         timer.start();
         snakeSize = 3;   //начальная длина змейки
         for (int i = 0; i < snakeSize; i++) {
-            x[i] = 48;
-            y[i] = 48 - i * SNAKE_SIZE;
+            x[i] = 0;
+            y[i] = i * SNAKE_SIZE;
         }
         createFood();
     }
 
     private void checkFood() {
+        if (workWithFile.getData("src/main/resources/data/TypeOfDifficult.txt").equals("Medium")) {
+            if (x[0] == 512 && y[0] == 512) {
+                x[0] = 128;
+                y[0] = 128;
+            }
+        }
         if (x[0] == foodX && y[0] == foodY) {
             audioPickUpSmth.sound();
             audioPickUpSmth.setVolume();
             snakeSize++;
             score++;
-
+            timer.stop();
+            if (workWithFile.getData("src/main/resources/data/TypeOfDifficult.txt").equals("Medium")) {
+                delay -= 10;
+            }
+            timer = new Timer(delay, this);
+            timer.start();
             createFood();
         }
     }
@@ -99,52 +167,81 @@ public class GameField extends JPanel implements ActionListener {
     }
 
     private void checkSnakeSize() {
-        for (int i = snakeSize; i > 0; i--) if (i > 4 && x[0] == x[i] && y[0] == y[i]) inGame = false;
+        for (int i = snakeSize; i > 0; i--)
+            if (i > 4 && x[0] == x[i] && y[0] == y[i]) inGame = false;
     }
 
     private void checkField() {
+        for (int i = 0; i < wallX.size(); i++) {
+            if (wallX.get(i) - x[0] == 16 && y[0] == wallY.get(i) && right) inGame = false;
+            if (x[0] - wallX.get(i) == 16 && y[0] == 256 && left) inGame = false;
+            if (wallY.get(i) - y[0] == 16 && x[0] == wallX.get(i) && down) inGame = false;
+            if (y[0] - wallY.get(i) == 16 && x[0] == wallX.get(i) && up) inGame = false;
+        }
         if (x[0] <= 0 && left) inGame = false;
-        if (x[0] >= ALL_SEGMENTS - 16 && right) inGame = false;
+        if (x[0] >= gameFrame.getWidth() - 16 && right) inGame = false;
         if (y[0] <= 0 && up) inGame = false;
-        if (y[0] >= ALL_SEGMENTS - 32 && down) inGame = false;
+        if (y[0] >= gameFrame.getHeight() - 32 && down) inGame = false;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);    //перерисовка всего поля
         if (inGame) {
+            for (int i = 0; i <= gameFrame.getHeight() / 32; i++) {
+                for (int j = 0; j <= gameFrame.getWidth() / 32; j++) {
+                    g.drawImage(grass, j * 32, i * 32, this);
+                }
+            }
+            if (workWithFile.getData("src/main/resources/data/TypeOfDifficult.txt").equals("Medium")) {
+                g.drawImage(portalOut, 128, 128, this);
+                g.drawImage(portalIn, 512, 512, this);
+            }
+            if (workWithFile.getData("src/main/resources/data/TypeOfDifficult.txt").equals("Hard")) {
+                for (int i = 0; i < wallX.size(); i++) {
+                    g.drawImage(wall, wallX.get(i), wallY.get(i), this);
+                }
+            }
             g.drawImage(food, foodX, foodY, this);
             for (int i = 0; i < snakeSize; i++) {
                 //g.drawImage(snake, x[i], y[i], this);
-                g.drawRect(x[i], y[i], 16, 16);
+                if (i == 0) {
+                    if (up)
+                        g.drawImage(headUp, x[i], y[i], this);
+                    if (left)
+                        g.drawImage(headLeft, x[i], y[i], this);
+                    if (down)
+                        g.drawImage(headDown, x[i], y[i], this);
+                    if (right)
+                        g.drawImage(headRight, x[i], y[i], this);
+                }
+                else {
+                    g.drawImage(body, x[i], y[i], this);
+                }
             }
-            for (int i = 0; i < snakeSize; i++) {
-                //g.drawImage(food, x[i], y[i], this);
-                //g.drawRect();
-                g.drawRect(x[i], y[i], 16, 16);
-
+            /*Добавляет временный элемент, можно сделать бонусы временные
+            if (isDateSet) {
+                isDateSet = false;
+                date1 = new Date();
+                date2 = new Date();
             }
+            if (date2.getTime() - date1.getTime() < 5000) {
+                date2 = new Date();
+                g.drawImage(body, 90, 90, this);
+            }
+            */
 
             Font font = new Font("Mongolian Baiti", Font.BOLD, 10);
             g.setColor(Color.BLACK);
             g.setFont(font);
-            g.drawString("SCORE: " + score, ALL_SEGMENTS - 70, 20);
+            g.drawString("SCORE: " + score, gameFrame.getWidth() - 70, 20);
 
         } else {
+            timer = new Timer(1000, this);
+            timer.start();
+
             music.gameOver();
-            //for (int j = 1; j < 10; j++) {
-               // ImageIcon bubbles = new ImageIcon("src/main/resources/picture/bubble" + j + ".png");
-                for (int i = 0; i < snakeSize; i++) {
-                    //g.drawImage(food, x[i], y[i], this);
-                    //g.drawRect();
-                    g.clearRect(x[i], y[i], 16, 16);
-                    repaint(1, x[i], y[i], 16, 16);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+
             int maxScore = Integer.parseInt(workWithFile.getData("src/main/resources/data/score.txt"));
             if (maxScore < score) {
                 workWithFile.writeData(String.valueOf(score), "src/main/resources/data/score.txt");

@@ -17,7 +17,7 @@ public class GameWindow extends JFrame {
         JFrame frame = new JFrame();
         this.mainMenu = mainMenu;
         frame.setTitle("Snake");
-        frame.setBounds(x, y, 480, 480);
+        frame.setBounds(x, y, 688, 688);
         frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         frame.getContentPane().add(new GameField(frame, mainMenu));
         frame.setVisible(true);

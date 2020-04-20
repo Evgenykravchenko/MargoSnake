@@ -11,6 +11,7 @@ public class MyFrame extends JFrame {
     public static JFrame gameFrame = new JFrame();
     public static Audio audio = new Audio(0.8, "src/main/resources/music/mainMenuSound.wav");
     public static  Audio audioBtn = new Audio(0.8, "src/main/resources/music/btnClickSound.wav");
+    public static  Audio playMusic = new Audio(0.8, "src/main/resources/music/playMusic.wav");
     private static WorkWithFile workWithFile = new WorkWithFile();
 
     public MyFrame() {
@@ -96,6 +97,7 @@ public class MyFrame extends JFrame {
         gameFrame.getContentPane().add(exitBtn);
         gameFrame.getContentPane().add(label);
         gameFrame.setVisible(true);
+
     }
 
     /*public void actionPlay(ActionEvent e) {
@@ -227,7 +229,6 @@ public class MyFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 audioBtn.sound();
                 audioBtn.setVolume();
-                workWithFile.writeData("false", "src/main/resources/data/isSoundPlay.txt");
                 System.exit(0);
             }
         });
@@ -254,6 +255,8 @@ public class MyFrame extends JFrame {
         JSlider volumeSl;
         JLabel musicONOFF = new JLabel("Music ON/OFF");
         JButton musicOnOffBtn = new JButton("V");
+        JLabel difficultyLvlLbl = new JLabel("Level difficulty");
+        JButton difficultyLvlBtn = new JButton(workWithFile.getData("src/main/resources/data/TypeOfDifficult.txt"));
         gameFrame.setBackground(Color.blue);
 
         settingsTittleLbl.setLocation(gameFrame.getSize().width / 2 - 50, 0);
@@ -271,6 +274,11 @@ public class MyFrame extends JFrame {
         musicONOFF.setSize(400, 200);
         musicONOFF.setForeground(Color.PINK);
 
+        difficultyLvlLbl.setLocation(gameFrame.getSize().width / 2 - 200, 200);
+        difficultyLvlLbl.setFont(new Font("Serif", Font.PLAIN, 35));
+        difficultyLvlLbl.setSize(400, 200);
+        difficultyLvlLbl.setForeground(Color.PINK);
+
         musicOnOffBtn.setLocation(gameFrame.getSize().width - 150, 220);
         musicOnOffBtn.setSize(100, 50);
         musicOnOffBtn.setForeground(Color.pink);
@@ -284,6 +292,37 @@ public class MyFrame extends JFrame {
                     audio.setWt(0);
                 }
                 audio.setVolume();
+            }
+        });
+
+        difficultyLvlBtn.setLocation(gameFrame.getSize().width - 150, 270);
+        difficultyLvlBtn.setSize(100, 50);
+        if (difficultyLvlBtn.getText().equals("Easy"))
+            difficultyLvlBtn.setForeground(Color.green);
+        if (difficultyLvlBtn.getText().equals("Medium"))
+            difficultyLvlBtn.setForeground(Color.orange);
+        if (difficultyLvlBtn.getText().equals("Hard"))
+            difficultyLvlBtn.setForeground(Color.red);
+
+        difficultyLvlBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                audioBtn.sound();
+                audioBtn.setVolume();
+                System.out.println(difficultyLvlBtn.getText());
+                if (difficultyLvlBtn.getText().equals("Easy")) {
+                    difficultyLvlBtn.setText("Medium");
+                    difficultyLvlBtn.setForeground(Color.orange);
+                }
+                else if (difficultyLvlBtn.getText().equals("Medium")) {
+                    difficultyLvlBtn.setText("Hard");
+                    difficultyLvlBtn.setForeground(Color.red);
+                }
+                 else if (difficultyLvlBtn.getText().equals("Hard")) {
+                    difficultyLvlBtn.setText("Easy");
+                    difficultyLvlBtn.setForeground(Color.green);
+                }
+                workWithFile.writeData(difficultyLvlBtn.getText(), "src/main/resources/data/TypeOfDifficult.txt");
             }
         });
 
@@ -352,6 +391,8 @@ public class MyFrame extends JFrame {
         gameFrame.getContentPane().add(volumeSl);
         gameFrame.getContentPane().add(musicONOFF);
         gameFrame.getContentPane().add(musicOnOffBtn);
+        gameFrame.getContentPane().add(difficultyLvlLbl);
+        gameFrame.getContentPane().add(difficultyLvlBtn);
 
         gameFrame.getContentPane().repaint();
     }
